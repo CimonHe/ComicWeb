@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+
+    <typeAliases>
+        <package name="com.CimonHe.pojo"/>
+    </typeAliases>
+    <mappers>
+        <mapper resource="com/CimonHe/dao/UserMapper.xml"/>
+        <mapper resource="com/CimonHe/dao/AdminMapper.xml"/>
+        <mapper resource="com/CimonHe/dao/PendingComicMapper.xml"/>
+        <mapper resource="com/CimonHe/dao/LikeComicMapper.xml"/>
+        <mapper resource="com/CimonHe/dao/ComicMapper.xml"/>
+    </mappers>
+
+
+
+</configuration>

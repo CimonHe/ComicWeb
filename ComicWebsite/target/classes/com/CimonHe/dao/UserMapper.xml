@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.CimonHe.dao.UserMapper">
+
+    <!--增加一个User-->
+    <insert id="addUser" parameterType="user">
+      insert into comic_website.user(username,password,email)
+      values ( #{username}, #{password},#{email})
+   </insert>
+
+    <!--根据id删除一个User-->
+    <delete id="deleteUserById" parameterType="int">
+      delete from comic_website.user
+      where id=#{id};
+   </delete>
+
+    <!--更新User-->
+    <update id="updateUser" parameterType="user">
+      update comic_website.user
+      set username = #{username},password = #{password},email = #{email}
+      where username = #{username};
+   </update>
+
+    <!--根据id查询,返回一个Book-->
+    <select id="queryUserById" resultType="user">
+      select * from comic_website.user
+      where id = #{id};
+   </select>
+
+    <!--查询全部Book-->
+    <select id="queryAllUser" resultType="user">
+      SELECT * from comic_website.user
+   </select>
+
+    <select id="queryUserByNameAndPwd" parameterType="map" resultType="user">
+        SELECT * from comic_website.user
+        where username = #{username} AND password = #{password} ;
+    </select>
+
+    <select id="queryUserByEmailAndPwd" parameterType="map" resultType="user">
+        SELECT * from comic_website.user
+        where email = #{email} AND password = #{password} ;
+    </select>
+
+    <select id="queryUserByName" resultType="User">
+        SELECT * from comic_website.user
+        where username = #{username} ;
+    </select>
+
+    <select id="queryUserByEmail" resultType="User">
+        SELECT * from comic_website.user
+        where email = #{email} ;
+    </select>
+
+    <delete id="deleteUserByName" parameterType="String">
+        delete from comic_website.user
+        where username= #{username};
+    </delete>
+
+    <insert id="addComic" parameterType="map">
+        INSERT INTO comic_website.comic(username, comicName, tag)
+        VALUES (#{username},#{comicName},#{tag}) ;
+
+    </insert>
+
+    <insert id="addComicChapter" parameterType="map">
+        INSERT INTO comic_website.pending_comic(username, comicName)
+        VALUES (#{username},#{comicName});
+    </insert>
+
+    <select id="queryUserByNameLike" parameterType="String" resultType="user">
+        select * from comic_website.user where username like '%'+#{name}+'%'
+    </select>
+</mapper>

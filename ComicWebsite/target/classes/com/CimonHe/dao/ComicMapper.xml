@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.CimonHe.dao.ComicMapper">
+
+    <select id="queryAllComic" resultType="comic">
+        select * from comic_website.comic
+    </select>
+    
+    <insert id="addComic" parameterType="comic">
+        insert into comic_website.comic (username,comicName,tag) values (#{username},#{comicName},#{tag});
+    </insert>
+
+    <delete id="deleteComicByComicName" parameterType="String">
+        delete from comic_website.comic where comicName = #{comicName}
+    </delete>
+
+    <update id="updateByComicName" parameterType="comic">
+        update comic_website.comic
+        set username = #{username} , tag = #{tag}
+        where comicName = #{comicName}
+    </update>
+
+    <select id="queryComicByTag" parameterType="String" resultType="comic">
+        select * from comic_website.comic
+        where tag = #{tag}
+    </select>
+
+    <select id="countAllComic" resultType="int">
+        select count(*) from comic_website.comic
+    </select>
+
+    <select id="countComicByTag" resultType="int">
+        select count(*) from comic_website.comic where tag = #{tag}
+    </select>
+
+    <select id="countComicByUsername" resultType="int">
+                select count(*) from comic_website.comic where tag = #{username}
+    </select>
+
+    <select id="getAllUserComic" parameterType="String" resultType="comic">
+        select * from comic_website.comic
+        where username = #{username}
+    </select>
+</mapper>

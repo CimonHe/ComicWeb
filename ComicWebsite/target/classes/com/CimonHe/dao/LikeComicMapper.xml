@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.CimonHe.dao.LikeComicMapper">
+
+    <select id="hasLike" parameterType="LikeComic" resultType="likeComic">
+        select * from comic_website.like_comic
+        where likeUser = #{likeUser} AND comicName = #{comicName}
+    </select>
+
+    <select id="queryComicLike" parameterType="String" resultType="likeComic">
+        select * from comic_website.like_comic
+        where comicName = #{comicName}
+    </select>
+
+    <insert id="addComicLike" parameterType="likeComic">
+        insert into comic_website.like_comic (likeUser,comicName) values (#{likeUser},#{comicName});
+    </insert>
+
+    <delete id="deleteComicLike" parameterType="likeComic">
+        delete from comic_website.like_comic
+        where likeUser = #{likeUser} AND comicName = #{comicName}
+    </delete>
+
+</mapper>
