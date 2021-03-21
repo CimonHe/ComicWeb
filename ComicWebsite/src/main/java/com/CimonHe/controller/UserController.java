@@ -662,15 +662,6 @@ public class UserController {
         return returnValue.toString();
     }
 
-    @RequestMapping(value = "/testMail",produces = { "application/json;charset=UTF-8" })
-    @ResponseBody
-    public void testMail(){
-        try {
-            sendMail(verificationCode,"2895325697@qq.com");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     //高并发处理
     public void sendMail(int verificationCode,String receiver) throws Exception
