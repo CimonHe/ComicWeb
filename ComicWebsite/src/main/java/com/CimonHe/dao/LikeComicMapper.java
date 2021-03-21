@@ -8,7 +8,7 @@ public interface LikeComicMapper {
 
     LikeComic hasLike(LikeComic likeComic);
 
-    List<LikeComic> queryComicLike(String comicName);
+    int queryComicLike(String comicName);
 
     int addComicLike(LikeComic likeComic);
 

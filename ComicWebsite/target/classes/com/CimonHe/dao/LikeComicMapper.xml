@@ -10,8 +10,8 @@
         where likeUser = #{likeUser} AND comicName = #{comicName}
     </select>
 
-    <select id="queryComicLike" parameterType="String" resultType="likeComic">
-        select * from comic_website.like_comic
+    <select id="queryComicLike" parameterType="String" resultType="int">
+        select count(*) from comic_website.like_comic
         where comicName = #{comicName}
     </select>
 

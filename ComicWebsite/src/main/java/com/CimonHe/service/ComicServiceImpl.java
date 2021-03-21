@@ -3,7 +3,9 @@ package com.CimonHe.service;
 import com.CimonHe.dao.ComicMapper;
 import com.CimonHe.pojo.Comic;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ComicServiceImpl implements ComicService{
     private ComicMapper comicMapper;
@@ -53,5 +55,10 @@ public class ComicServiceImpl implements ComicService{
         return comicMapper.getAllUserComic(username);
     }
 
-
+    public int updateTag(String oldTag,String newTag){
+        Map<String,String> map= new HashMap<>();
+        map.put("oldTag",oldTag);
+        map.put("newTag",newTag);
+        return comicMapper.updateTag(map);
+    }
 }

@@ -25,6 +25,6 @@
     </delete>
 
     <select id="getCountAllPendingComics" resultType="int">
-        select count(*) from comic_website.pending_comic;
+        select count(*) from comic_website.pending_comic
     </select>
 </mapper>

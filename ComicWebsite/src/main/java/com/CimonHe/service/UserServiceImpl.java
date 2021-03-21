@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<User> queryUserByNameLike(String name) {
-        return userMapper.queryUserByNameLike(name);
+        return userMapper.queryUserByNameLike("%%"+name+"%%");
     }
 
 

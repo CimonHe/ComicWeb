@@ -225,9 +225,7 @@ public class MyTest {
         LikeComicMapper mapper = context.getBean("likeComicMapper", LikeComicMapper.class);
         System.out.println(mapper.addComicLike(new LikeComic("钱二","星际牛仔")));
         mapper.addComicLike(new LikeComic("白白","星际牛仔"));
-        for (LikeComic likeComic :mapper.queryComicLike("星际牛仔"))
-            System.out.println(likeComic);
-        System.out.println(mapper.hasLike(new LikeComic("白白","星际牛仔")));
+        System.out.println(mapper.queryComicLike("星际牛仔"));
     }
 
     @Test
@@ -245,6 +243,26 @@ public class MyTest {
         mapper.deleteComicByComicName("opus");
         for (Comic comic : mapper.queryAllComic()) {
             System.out.println(comic);
+        }
+    }
+
+    @Test
+    public void test18(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring-dao.xml");
+        ComicMapper mapper = context.getBean("comicMapper", ComicMapper.class);
+        Map<String,String> map= new HashMap<>();
+        map.put("oldTag","奇幻");
+        map.put("newTag","分镜炸裂");
+        mapper.updateTag(map);
+    }
+
+    @Test
+    public void test19(){
+        ApplicationContext context = new ClassPathXmlApplicationContext("spring-dao.xml");
+        UserMapper mapper = context.getBean("userMapper", UserMapper.class);
+        List<User> users =  mapper.queryUserByNameLike("安");
+        for (User user : users) {
+            System.out.println(user);
         }
     }
 }

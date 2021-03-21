@@ -3,6 +3,7 @@ package com.CimonHe.dao;
 import com.CimonHe.pojo.Comic;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ComicMapper {
 
@@ -13,6 +14,8 @@ public interface ComicMapper {
     int deleteComicByComicName (String comicName);
 
     int updateByComicName(Comic comic);
+
+    int updateTag(Map<String,String> map);
 
     List<Comic> queryComicByTag(String tag);
 

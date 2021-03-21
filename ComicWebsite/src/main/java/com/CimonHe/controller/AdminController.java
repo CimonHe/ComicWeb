@@ -7,6 +7,7 @@ import com.CimonHe.service.ComicService;
 import com.CimonHe.service.PendingComicService;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class AdminController {
 
     public final int FAIL = 30;
 
-    private List<String> tags = new ArrayList<String>(Arrays.asList("中二","热血","青少年"));
+    private List<String> tags = new ArrayList<String>(Arrays.asList("中二","奇幻","热血","青少年","悬疑"));
 
     public List<String> getTags() {
         return tags;
@@ -190,6 +191,9 @@ public class AdminController {
     @ResponseBody
     public String checkedPass(HttpSession session,@RequestParam("username") String username,@RequestParam("comicName") String comicName,@RequestParam("chapter") String chapter){
 
+        System.out.println("审核漫画通过checkedPass");
+        System.out.println("username:"+username+" comicName:"+comicName+" chapter"+chapter);
+
         JSONObject returnValue = new JSONObject();
 
         //将pathFrom的文件转移到pathTo的文件
@@ -222,17 +226,29 @@ public class AdminController {
         }
         deleteDirect(startChapterFiles);
         //从审核数据库中删除
-        System.out.println(startComicFile.listFiles()==null);
-        if (startComicFile.listFiles()==null)
+        if (startComicFile.listFiles().length==0)
+        {
+            deleteDirect(startComicFile);
             pendingComicService.deletePendingComic(comicName);
+        }
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","审核漫画已通过！");
+        System.out.println("审核漫画已通过！");
         return returnValue.toString();
     }
+
+//    @Test
+//    public void test12(){
+//        String startComicPath = "D:\\大二\\作业\\java作业\\ComicWebsite\\out\\artifacts\\ComicWebsite_war_exploded\\upload\\安生\\八十一道超纲题";
+//        File startComicFile = new File(startComicPath);
+//        System.out.println(startComicFile.listFiles().length);
+//    }
 
     @RequestMapping(value = "/addTag",produces = { "application/json;charset=UTF-8" })
     public String addTag(String newTag)
     {
+        System.out.println("增加漫画标签addTag");
+        System.out.println("newTag"+newTag);
         JSONObject returnValue = new JSONObject();
 
         if (tags.contains(newTag))
@@ -251,6 +267,7 @@ public class AdminController {
     @RequestMapping(value = "/queryTags",produces = { "application/json;charset=UTF-8" })
     public String queryTags (HttpServletResponse response)
     {
+        System.out.println("查询所有漫画标签queryTags");
         JSONObject returnValue = new JSONObject();
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","查询所有标签成功！");
@@ -260,15 +277,19 @@ public class AdminController {
         return returnValue.toString();
     }
 
-    @RequestMapping("/updateTag")
+    @RequestMapping(value = "/updateTag",produces = { "application/json;charset=UTF-8" })
     public String updateTag (String oldTag,String newTag)
     {
+        System.out.println("更新漫画标签updateTag");
+        System.out.println("oldTag:"+oldTag+" newTag:"+newTag);
         JSONObject returnValue = new JSONObject();
 
-        if (tags.contains(newTag)&&(!tags.contains(oldTag)))
+        if ((!tags.contains(newTag))&&tags.contains(oldTag))
         {
             tags.remove(oldTag);
             tags.add(newTag);
+            comicService.updateTag(oldTag,newTag);
+            System.out.println("更新成功");
             returnValue.put("status",SUCCESS);
             returnValue.put("msg","更新标签成功！");
             return returnValue.toString();

@@ -764,57 +764,53 @@ SELECT|sys.sys_config:null
     </user>
     <table id="236" parent="2" name="admin"/>
     <table id="237" parent="2" name="comic"/>
-    <table id="238" parent="2" name="pending_comic"/>
-    <table id="239" parent="2" name="user"/>
-    <column id="240" parent="236" name="id">
+    <table id="238" parent="2" name="like_comic"/>
+    <table id="239" parent="2" name="pending_comic"/>
+    <table id="240" parent="2" name="user"/>
+    <column id="241" parent="236" name="id">
       <Position>1</Position>
       <DataType>int(10)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="241" parent="236" name="adminName">
+    <column id="242" parent="236" name="adminName">
       <Position>2</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="242" parent="236" name="password">
+    <column id="243" parent="236" name="password">
       <Position>3</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="243" parent="236" name="email">
+    <column id="244" parent="236" name="email">
       <Position>4</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="244" parent="236" name="PRIMARY">
+    <key id="245" parent="236" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="245" parent="237" name="id">
+    <column id="246" parent="237" name="id">
       <Position>1</Position>
       <DataType>int(20)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="246" parent="237" name="username">
+    <column id="247" parent="237" name="username">
       <Position>2</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="247" parent="237" name="comicName">
+    <column id="248" parent="237" name="comicName">
       <Position>3</Position>
       <DataType>varchar(40)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="248" parent="237" name="likeNum">
-      <Position>4</Position>
-      <DataType>int(10) unsigned zerofill|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
     <column id="249" parent="237" name="tag">
-      <Position>5</Position>
+      <Position>4</Position>
       <DataType>varchar(255)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
@@ -829,15 +825,13 @@ SELECT|sys.sys_config:null
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="252" parent="238" name="username">
+    <column id="252" parent="238" name="likeUser">
       <Position>2</Position>
       <DataType>varchar(40)|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
     <column id="253" parent="238" name="comicName">
       <Position>3</Position>
       <DataType>varchar(40)|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
     <key id="254" parent="238" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
@@ -846,26 +840,47 @@ SELECT|sys.sys_config:null
     </key>
     <column id="255" parent="239" name="id">
       <Position>1</Position>
-      <DataType>int(20)|0s</DataType>
+      <DataType>int(10)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
     <column id="256" parent="239" name="username">
       <Position>2</Position>
+      <DataType>varchar(40)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="257" parent="239" name="comicName">
+      <Position>3</Position>
+      <DataType>varchar(40)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="258" parent="239" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="259" parent="240" name="id">
+      <Position>1</Position>
+      <DataType>int(20)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="260" parent="240" name="username">
+      <Position>2</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="257" parent="239" name="password">
+    <column id="261" parent="240" name="password">
       <Position>3</Position>
       <DataType>varchar(20)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <column id="258" parent="239" name="email">
+    <column id="262" parent="240" name="email">
       <Position>4</Position>
       <DataType>varchar(30)|0s</DataType>
       <NotNull>1</NotNull>
     </column>
-    <key id="259" parent="239" name="PRIMARY">
+    <key id="263" parent="240" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>

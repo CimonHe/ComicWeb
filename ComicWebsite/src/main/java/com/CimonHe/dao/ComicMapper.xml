@@ -37,11 +37,17 @@
     </select>
 
     <select id="countComicByUsername" resultType="int">
-                select count(*) from comic_website.comic where tag = #{username}
+            select count(*) from comic_website.comic where username = #{username}
     </select>
 
     <select id="getAllUserComic" parameterType="String" resultType="comic">
         select * from comic_website.comic
         where username = #{username}
     </select>
+
+    <update id="updateTag" parameterType="map">
+        update comic_website.comic
+        set tag = #{newTag}
+        where tag = #{oldTag}
+    </update>
 </mapper>

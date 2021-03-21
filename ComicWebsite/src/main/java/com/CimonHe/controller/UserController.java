@@ -379,47 +379,45 @@ public class UserController {
     }
 
 
-    @RequestMapping(value="/download")
-    public ResponseEntity downloads(HttpSession session,HttpServletResponse response ,String username,String comicNames[], HttpServletRequest request) throws Exception{
-        //要下载的图片地址
-        for (String comicName : comicNames) {
-            String  path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName);
-            File file1=new File(path);
-            File[] tempList = file1.listFiles();
-            for (int i = 0; i < tempList.length; i++) {
-                System.out.println("文     件："+tempList[i]);
-                String  fileName = tempList[i].getName();
-                System.out.println();
-
-                //1、设置response 响应头
-                response.reset(); //设置页面不缓存,清空buffer
-                response.setCharacterEncoding("UTF-8"); //字符编码
-                response.setContentType("multipart/form-data"); //二进制传输数据
-                //设置响应头
-                response.setHeader("Content-Disposition",
-                        "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
-
-                File file = new File(path,fileName);
-                //2、 读取文件--输入流
-                InputStream input=new FileInputStream(file);
-                //3、 写出文件--输出流
-                OutputStream out = response.getOutputStream();
-
-                byte[] buff =new byte[1024];
-                int index=0;
-                //4、执行 写出操作
-                while((index= input.read(buff))!= -1){
-                    out.write(buff, 0, index);
-                    out.flush();
-                }
-                out.close();
-                input.close();
-
-            }
-        }
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
+//    @RequestMapping(value="/download")
+//    public ResponseEntity downloads(HttpSession session,HttpServletResponse response ,String username,String comicName,String chapter, HttpServletRequest request) throws Exception{
+//        //要下载的图片地址
+//        String  path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName+"/"+chapter);
+//        System.out.println(path);
+//            File chapterFile=new File(path);
+//            File[] tempList = chapterFile.listFiles();
+//            for (int i = 0; i < tempList.length; i++) {
+//                System.out.println("文     件："+tempList[i]);
+//                String  fileName = tempList[i].getName();
+//                System.out.println();
+//
+//                //1、设置response 响应头
+//                response.reset(); //设置页面不缓存,清空buffer
+//                response.setCharacterEncoding("UTF-8"); //字符编码
+//                response.setContentType("multipart/form-data"); //二进制传输数据
+//                //设置响应头
+//                response.setHeader("Content-Disposition",
+//                        "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
+//
+//                File file = new File(path,fileName);
+//                //2、 读取文件--输入流
+//                InputStream input=new FileInputStream(file);
+//                //3、 写出文件--输出流
+//                OutputStream out = response.getOutputStream();
+//
+//                byte[] buff =new byte[1024];
+//                int index=0;
+//                //4、执行 写出操作
+//                while((index= input.read(buff))!= -1){
+//                    out.write(buff, 0, index);
+//                    out.flush();
+//                }
+//                out.close();
+//                input.close();
+//                Thread.sleep(5000);
+//        }
+//        return new ResponseEntity(HttpStatus.OK);
+//    }
 
     @RequestMapping(value = "modifyInf",produces = { "application/json;charset=UTF-8" })
     @ResponseBody
@@ -490,7 +488,7 @@ public class UserController {
         JSONObject returnValue = new JSONObject();
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","查询漫画点赞数成功！");
-        returnValue.put("ComicLike",likeComicService.queryComicLike(comicName));
+        returnValue.put("comicLike",likeComicService.queryComicLike(comicName));
         return returnValue.toString();
     }
 
@@ -498,6 +496,8 @@ public class UserController {
     public String searchUser (String name){
         JSONObject returnValue = new JSONObject();
         List<User> users = userService.queryUserByNameLike(name);
+        returnValue.put("status",SUCCESS);
+        returnValue.put("msg","查询用户成功！");
         returnValue.put("users",users);
         return returnValue.toString();
     }
@@ -577,8 +577,9 @@ public class UserController {
 
     @RequestMapping(value = "searchComic",produces = { "application/json;charset=UTF-8" })
     public String searchComic (String tag,int pageNum, int pageSize){
+        System.out.println("测试搜索漫画功能searchComic");
+        System.out.println("tag:"+tag+" pageNum:"+pageNum+" pageSize"+pageSize);
         JSONObject returnValue = new JSONObject();
-
 
         PageHelper.startPage(pageNum, pageSize);
         //分页查询
@@ -595,6 +596,7 @@ public class UserController {
         }
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","返回根据标签查询的漫画！");
+        System.out.println("返回根据标签查询的漫画！");
         returnValue.put("imgPaths",imgPaths);
         returnValue.put("username",usernames);
         returnValue.put("comicNames",comicNames);
@@ -641,7 +643,7 @@ public class UserController {
 
     @RequestMapping(value = "/readChapter",produces = { "application/json;charset=UTF-8" })
     @ResponseBody
-    public String  readCheckChapter(HttpSession session,String username,String comicName,String chapter){
+    public String  readChapter(HttpSession session,String username,String comicName,String chapter){
 
         JSONObject returnValue = new JSONObject();
 
@@ -653,6 +655,7 @@ public class UserController {
         File[] tempList = file.listFiles();
         for (int i = 0; i < tempList.length; i++) {
             imgPaths.add(path+"/"+tempList[i].getName());
+            System.out.println(path+"/"+tempList[i].getName());
             System.out.println(tempList[i]);
             System.out.println(tempList[i].getName());
         }

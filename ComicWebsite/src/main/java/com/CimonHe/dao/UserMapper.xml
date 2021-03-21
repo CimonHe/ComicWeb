@@ -5,32 +5,27 @@
 
 <mapper namespace="com.CimonHe.dao.UserMapper">
 
-    <!--增加一个User-->
     <insert id="addUser" parameterType="user">
       insert into comic_website.user(username,password,email)
       values ( #{username}, #{password},#{email})
    </insert>
 
-    <!--根据id删除一个User-->
     <delete id="deleteUserById" parameterType="int">
       delete from comic_website.user
       where id=#{id};
    </delete>
 
-    <!--更新User-->
     <update id="updateUser" parameterType="user">
       update comic_website.user
       set username = #{username},password = #{password},email = #{email}
       where username = #{username};
    </update>
 
-    <!--根据id查询,返回一个Book-->
     <select id="queryUserById" resultType="user">
       select * from comic_website.user
       where id = #{id};
    </select>
 
-    <!--查询全部Book-->
     <select id="queryAllUser" resultType="user">
       SELECT * from comic_website.user
    </select>
@@ -61,7 +56,7 @@
     </delete>
 
     <insert id="addComic" parameterType="map">
-        INSERT INTO comic_website.comic(username, comicName, tag)
+        INSERT INTO comic_website.comic (username, comicName, tag)
         VALUES (#{username},#{comicName},#{tag}) ;
 
     </insert>
@@ -72,6 +67,6 @@
     </insert>
 
     <select id="queryUserByNameLike" parameterType="String" resultType="user">
-        select * from comic_website.user where username like '%'+#{name}+'%'
+        select * from comic_website.user where username like #{name}
     </select>
 </mapper>

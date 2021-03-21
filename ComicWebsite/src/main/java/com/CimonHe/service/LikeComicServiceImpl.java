@@ -19,7 +19,7 @@ public class LikeComicServiceImpl implements LikeComicService{
     }
 
     @Override
-    public List<LikeComic> queryComicLike(String comicName) {
+    public int queryComicLike(String comicName) {
         return this.likeComicMapper.queryComicLike(comicName);
     }
 
