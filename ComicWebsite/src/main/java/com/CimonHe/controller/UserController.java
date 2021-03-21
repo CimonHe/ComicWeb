@@ -526,7 +526,7 @@ public class UserController {
         List <String> comicNames = new ArrayList<>();
         for (Comic comic: comics)
         {
-            imgPaths.add("/comics/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
+            imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
@@ -562,7 +562,7 @@ public class UserController {
         List <String> comicNames = new ArrayList<>();
         for (Comic comic: comics)
         {
-            imgPaths.add("/comics/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
+            imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
@@ -588,7 +588,7 @@ public class UserController {
         List <String> comicNames = new ArrayList<>();
         for (Comic comic: comics)
         {
-            imgPaths.add("/comics/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
+            imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
@@ -649,10 +649,10 @@ public class UserController {
         System.out.println(path);
         //将章节的所有图片传给前端
         List<String> imgPaths = new ArrayList<>();
-        File file=new File(path);
+        File file=new File(session.getServletContext().getRealPath(path));
         File[] tempList = file.listFiles();
         for (int i = 0; i < tempList.length; i++) {
-            imgPaths.add(path+"\\"+tempList[i].getName());
+            imgPaths.add(path+"/"+tempList[i].getName());
             System.out.println(tempList[i]);
             System.out.println(tempList[i].getName());
         }

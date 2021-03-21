@@ -40,7 +40,7 @@ public class AdminController {
 
     public final int FAIL = 30;
 
-    private List<String> tags = new ArrayList<String>(Arrays.asList("标签一","标签二","标签三"));
+    private List<String> tags = new ArrayList<String>(Arrays.asList("中二","热血","青少年"));
 
     public List<String> getTags() {
         return tags;
@@ -146,14 +146,14 @@ public class AdminController {
 
         JSONObject returnValue = new JSONObject();
 
-        String path = "/upload/"+"/comics/"+username+"/"+comicName+"/"+chapter;
-        System.out.println(path);
+        String path = "/upload/"+username+"/"+comicName+"/"+chapter;
+        System.out.println("***"+path+"***");
         //将章节的所有图片传给前端
         List<String> imgPaths = new ArrayList<>();
-        File file=new File(path);
+        File file=new File(session.getServletContext().getRealPath(path));
         File[] tempList = file.listFiles();
         for (int i = 0; i < tempList.length; i++) {
-            imgPaths.add(path+"\\"+tempList[i].getName());
+            imgPaths.add(path+"/"+tempList[i].getName());
             System.out.println(tempList[i]);
             System.out.println(tempList[i].getName());
         }
