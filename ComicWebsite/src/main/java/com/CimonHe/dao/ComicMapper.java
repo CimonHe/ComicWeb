@@ -27,4 +27,7 @@ public interface ComicMapper {
 
     List<Comic> getAllUserComic(String username);
 
+    Comic queryComicByName(String comicName);
+
+
 }

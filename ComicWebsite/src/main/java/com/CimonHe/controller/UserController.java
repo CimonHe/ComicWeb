@@ -160,7 +160,7 @@ public class UserController {
     public String register(@RequestParam("email") String email,@RequestParam("verifyCode") String verifyCode,@RequestParam("username") String username,@RequestParam("password") String password)
     {
         JSONObject returnValue = new JSONObject();
-        System.out.println(email+" "+verifyCode+" "+username+" "+password+" ");
+        System.err.println(email+" "+verifyCode+" "+username+" "+password+" ");
         if (userService.queryUserByName(username)!=null)
         {
             returnValue.put("status",FAIL);
@@ -179,7 +179,9 @@ public class UserController {
             returnValue.put("msg","密码不应为空");
             return returnValue.toString();
         }
-        System.out.println(verificationCode);
+        System.err.println(verificationCode);
+        System.err.println(verifyCode);
+        System.out.println(String.valueOf(verificationCode).equals(verifyCode));
         if (String.valueOf(verificationCode).equals(verifyCode)) //接受用户输入的验证码并判断是否成功
         {
             userService.addUser(new User(username,password,email));
@@ -445,17 +447,44 @@ public class UserController {
         JSONObject returnValue = new JSONObject();
         boolean hasALike = false;
         if (likeComicService.hasLike(likeComic)!=null)
+        {
             hasALike = true;
-        returnValue.put("status",SUCCESS);
-        returnValue.put("msg","已经点过赞！");
-        returnValue.put("hasALike",hasALike);
-        return returnValue.toString();
+            returnValue.put("status",SUCCESS);
+            returnValue.put("msg","已经点过赞！");
+            returnValue.put("hasALike",hasALike);
+            return returnValue.toString();
+        }
+        else{
+            hasALike = false;
+            returnValue.put("status",SUCCESS);
+            returnValue.put("msg","还未点过赞！");
+            returnValue.put("hasALike",hasALike);
+            return returnValue.toString();
+        }
     }
 
     @RequestMapping(value = "addComicLike",produces = { "application/json;charset=UTF-8" })
     public String addComicLike (LikeComic likeComic) {
         JSONObject returnValue = new JSONObject();
 
+        if (likeComic.getComicName()==null||likeComic.getLikeUser()==null)
+        {
+            returnValue.put("status", FAIL);
+            returnValue.put("msg", "输入的点赞用户或者漫画不应该为空");
+            return returnValue.toString();
+        }
+        if (userService.queryUserByName(likeComic.getLikeUser())==null)
+        {
+            returnValue.put("status", FAIL);
+            returnValue.put("msg", "输入的点赞用户不存在");
+            return returnValue.toString();
+        }
+        if (comicService.queryComicByName(likeComic.getComicName())==null)
+        {
+            returnValue.put("status", FAIL);
+            returnValue.put("msg", "要点赞的漫画不存在");
+            return returnValue.toString();
+        }
         if (likeComicService.hasLike(likeComic) != null) {
             returnValue.put("status", FAIL);
             returnValue.put("msg", "已经为该漫画点过赞");
@@ -624,7 +653,7 @@ public class UserController {
         JSONObject returnValue = new JSONObject();
 
         String path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName+"/");
-        List<String> chapters =new  ArrayList<>();
+        List<String> chapters =new  ArrayList<String>();
         System.out.println(path);
         //读取文件中的所有的章节信息并返回给前端
         File file=new File(path);

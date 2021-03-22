@@ -61,4 +61,9 @@ public class ComicServiceImpl implements ComicService{
         map.put("newTag",newTag);
         return comicMapper.updateTag(map);
     }
+
+    public Comic queryComicByName(String comicName){
+        return comicMapper.queryComicByName(comicName);
+    }
+
 }

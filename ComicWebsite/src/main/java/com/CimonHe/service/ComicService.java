@@ -26,4 +26,6 @@ public interface ComicService {
     List<Comic> getAllUserComic(String username);
 
     int updateTag(String oldTag,String newTag);
+
+    Comic queryComicByName(String comicName);
 }

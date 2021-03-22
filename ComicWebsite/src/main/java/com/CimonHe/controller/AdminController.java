@@ -205,6 +205,13 @@ public class AdminController {
         File endChapterFiles = new File(endChapterPath);
         File startComicFile = new File(startComicPath);
 
+        if (!startChapterFiles.exists())
+        {
+            returnValue.put("status",FAIL);
+            returnValue.put("msg","审核漫画不通过！不存在该审核漫画章节");
+            System.out.println("审核漫画不通过！");
+            return returnValue.toString();
+        }
         if (!endChapterFiles.exists())
             endChapterFiles.mkdirs();
         for (File startChapterFile : startChapterFiles.listFiles())

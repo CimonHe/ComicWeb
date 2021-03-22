@@ -50,4 +50,8 @@
         set tag = #{newTag}
         where tag = #{oldTag}
     </update>
+    <select id="queryComicByName" parameterType="String" resultType="comic">
+        select * from comic_website.comic
+        where comicName = #{comicName}
+    </select>
 </mapper>
