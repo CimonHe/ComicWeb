@@ -17,6 +17,8 @@ public interface ComicMapper {
 
     int updateTag(Map<String,String> map);
 
+    int updateComicTag (Map<String,String> map);
+
     List<Comic> queryComicByTag(String tag);
 
     int countAllComic ();
@@ -28,6 +30,5 @@ public interface ComicMapper {
     List<Comic> getAllUserComic(String username);
 
     Comic queryComicByName(String comicName);
-
 
 }

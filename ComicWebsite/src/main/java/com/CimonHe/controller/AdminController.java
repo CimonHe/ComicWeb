@@ -180,7 +180,10 @@ public class AdminController {
         //删除path文件夹漫画
         System.out.println(comicFile.listFiles()==null);
         if (comicFile.listFiles()==null)
+        {
+            deleteDirect(comicFile);
             pendingComicService.deletePendingComic(comicName);
+        }
         //从审核数据库中删除
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","审核漫画已下架！");
@@ -244,12 +247,30 @@ public class AdminController {
         return returnValue.toString();
     }
 
-//    @Test
-//    public void test12(){
-//        String startComicPath = "D:\\大二\\作业\\java作业\\ComicWebsite\\out\\artifacts\\ComicWebsite_war_exploded\\upload\\安生\\八十一道超纲题";
-//        File startComicFile = new File(startComicPath);
-//        System.out.println(startComicFile.listFiles().length);
-//    }
+    @RequestMapping(value ="/deleteComic",produces = { "application/json;charset=UTF-8" })
+    public String deleteComic(@RequestParam("comicName") String comicName,String username, HttpSession session){
+        JSONObject returnValue = new JSONObject();
+
+        String path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName);
+        String comicPostPath = session.getServletContext().getRealPath("/upload/"+username+"/"+comicName+".jpg");
+        System.err.println("comicPostPath:"+comicPostPath);
+        System.out.println("comicPostPath:"+comicPostPath);
+        comicService.deleteComicByComicName(comicName);
+        File comicFile = new File(path);
+        File comicPostFile = new File(comicPostPath);
+        deleteDirect(comicFile);
+        deleteDirect(comicPostFile);
+        returnValue.put("status",SUCCESS);
+        returnValue.put("msg","删除漫画成功！");
+        return returnValue.toString();
+    }
+
+    @Test
+    public void test12(){
+        String startComicPath = "D:\\大二\\作业\\java作业\\ComicWebsite\\out\\artifacts\\ComicWebsite_war_exploded\\upload\\安生\\星际牛仔.jpg";
+        File startComicFile = new File(startComicPath);
+        deleteDirect(startComicFile);
+    }
 
     @RequestMapping(value = "/addTag",produces = { "application/json;charset=UTF-8" })
     public String addTag(String newTag)
@@ -305,6 +326,29 @@ public class AdminController {
         returnValue.put("msg","更新标签失败！旧标签不存在或者新标签已存在");
         return returnValue.toString();
     }
+
+    @RequestMapping(value = "/updateComicTag" , produces = {"application/json;charset=UTF-8"})
+    public String updateComicTag(String comicName,String newTag)
+    {
+        JSONObject returnValue = new JSONObject();
+        comicService.updateComicTag(comicName,newTag);
+        if (comicService.queryComicByName(comicName)==null)
+        {
+            returnValue.put("status",FAIL);
+            returnValue.put("msg","漫画库中无 "+comicName+" 漫画");
+            return returnValue.toString();
+        }
+        if (!tags.contains(newTag))
+        {
+            returnValue.put("status",FAIL);
+            returnValue.put("msg","标签库中无  "+newTag+" 标签");
+            return returnValue.toString();
+        }
+        returnValue.put("status",SUCCESS);
+        returnValue.put("msg","更新 "+comicName+" 漫画标签成功");
+        return returnValue.toString();
+    }
+
 
     private static void deleteDirect(File fileDir) {
 

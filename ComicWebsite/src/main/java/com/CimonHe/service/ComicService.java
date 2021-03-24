@@ -28,4 +28,6 @@ public interface ComicService {
     int updateTag(String oldTag,String newTag);
 
     Comic queryComicByName(String comicName);
+
+    int updateComicTag(String comicName,String newTag);
 }

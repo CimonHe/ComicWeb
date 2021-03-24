@@ -8,6 +8,7 @@ import com.CimonHe.service.*;
 import com.CimonHe.utils.SendEmailTask;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,14 +22,19 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.mail.internet.MimeMessage;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.xml.transform.OutputKeys;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.*;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 
 @RestController
@@ -328,13 +334,27 @@ public class UserController {
 
     }
 
-    @RequestMapping("/deleteComic")
-    public String deleteComic(@RequestParam("comicName") String comic,String username, HttpSession session){
+    @RequestMapping(value ="/deleteComic",produces = { "application/json;charset=UTF-8" })
+    public String deleteComic(@RequestParam("comicName") String comicName,String username, HttpSession session){
         JSONObject returnValue = new JSONObject();
-        String path = session.getServletContext().getRealPath("/comics/"+username+"/"+comic);
-        comicService.deleteComicByComicName(comic);
-        File realPath = new File(path);
-        deleteDirect(realPath);
+
+        Comic comic = comicService.queryComicByName(comicName);
+
+        if (comic==null||(comic.getUsername()!=username)){
+            returnValue.put("status",FAIL);
+            returnValue.put("msg","用户"+username+"不存在"+comicName+"漫画");
+            return returnValue.toString();
+        }
+
+        String path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName);
+        String comicPostPath = session.getServletContext().getRealPath("/upload/"+username+"/"+comicName+".jpg");
+        System.err.println("comicPostPath:"+comicPostPath);
+        System.out.println("comicPostPath:"+comicPostPath);
+        comicService.deleteComicByComicName(comicName);
+        File comicFile = new File(path);
+        File comicPostFile = new File(comicPostPath);
+        deleteDirect(comicFile);
+        deleteDirect(comicPostFile);
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","删除漫画成功！");
         return returnValue.toString();
@@ -380,46 +400,79 @@ public class UserController {
         return false;
     }
 
+    @RequestMapping(value = "/download")
+    public void plistDownLoad(HttpSession session,HttpServletResponse response ,String username,String comicName,String chapter, HttpServletRequest request) throws Exception {
+        // 此处模拟处理ids,拿到文件下载url
+        System.out.println("$$$$$$$$$$$$");
+        List<String> paths = new ArrayList<>();
+        String chapterPath = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName+"/"+chapter);
+        System.out.println(chapterPath);
+        File file=new File(chapterPath);
+        File[] tempList = file.listFiles();
+        System.out.println(tempList);
+        for (int i = 0; i < tempList.length; i++) {
+            paths.add(chapterPath+"/"+tempList[i].getName());
+            System.out.println(chapterPath+"/"+tempList[i].getName());
+        }
+        if (paths.size() != 0) {
+            // 创建临时路径,存放压缩文件
+            String zipFilePath = "D:\\web\\我的zip.zip";
+            // 压缩输出流,包装流,将临时文件输出流包装成压缩流,将所有文件输出到这里,打成zip包
+            ZipOutputStream zipOut = new ZipOutputStream(new FileOutputStream(zipFilePath));
+            // 循环调用压缩文件方法,将一个一个需要下载的文件打入压缩文件包
+            for (String path : paths) {
+                // 该方法在下面定义
+                fileToZip(path, zipOut);
+            }
+            // 压缩完成后,关闭压缩流
+            zipOut.close();
 
-//    @RequestMapping(value="/download")
-//    public ResponseEntity downloads(HttpSession session,HttpServletResponse response ,String username,String comicName,String chapter, HttpServletRequest request) throws Exception{
-//        //要下载的图片地址
-//        String  path = session.getServletContext().getRealPath("/comics/"+username+"/"+comicName+"/"+chapter);
-//        System.out.println(path);
-//            File chapterFile=new File(path);
-//            File[] tempList = chapterFile.listFiles();
-//            for (int i = 0; i < tempList.length; i++) {
-//                System.out.println("文     件："+tempList[i]);
-//                String  fileName = tempList[i].getName();
-//                System.out.println();
-//
-//                //1、设置response 响应头
-//                response.reset(); //设置页面不缓存,清空buffer
-//                response.setCharacterEncoding("UTF-8"); //字符编码
-//                response.setContentType("multipart/form-data"); //二进制传输数据
-//                //设置响应头
-//                response.setHeader("Content-Disposition",
-//                        "attachment;fileName="+ URLEncoder.encode(fileName, "UTF-8"));
-//
-//                File file = new File(path,fileName);
-//                //2、 读取文件--输入流
-//                InputStream input=new FileInputStream(file);
-//                //3、 写出文件--输出流
-//                OutputStream out = response.getOutputStream();
-//
-//                byte[] buff =new byte[1024];
-//                int index=0;
-//                //4、执行 写出操作
-//                while((index= input.read(buff))!= -1){
-//                    out.write(buff, 0, index);
-//                    out.flush();
-//                }
-//                out.close();
-//                input.close();
-//                Thread.sleep(5000);
-//        }
-//        return new ResponseEntity(HttpStatus.OK);
-//    }
+            //拼接下载默认名称并转为ISO-8859-1格式
+            String fileName = new String((comicName+" "+chapter+".zip").getBytes(),"ISO-8859-1");
+            response.setHeader("Content-Disposition", "attchment;filename="+fileName);
+
+            //该流不可以手动关闭,手动关闭下载会出问题,下载完成后会自动关闭
+            ServletOutputStream outputStream = response.getOutputStream();
+            FileInputStream inputStream = new FileInputStream(zipFilePath);
+            // 如果是SpringBoot框架,在这个路径
+            // org.apache.tomcat.util.http.fileupload.IOUtils产品
+            // 否则需要自主引入apache的 commons-io依赖
+            // copy方法为文件复制,在这里直接实现了下载效果
+            IOUtils.copy(inputStream, outputStream);
+
+            // 关闭输入流
+            inputStream.close();
+
+            //下载完成之后，删掉这个zip包
+            File fileTempZip = new File(zipFilePath);
+            fileTempZip.delete();
+        }
+    }
+
+    public static void fileToZip(String filePath,ZipOutputStream zipOut) throws IOException {
+        // 需要压缩的文件
+        File file = new File(filePath);
+        // 获取文件名称,如果有特殊命名需求,可以将参数列表拓展,传fileName
+        String fileName = file.getName();
+        FileInputStream fileInput = new FileInputStream(filePath);
+        // 缓冲
+        byte[] bufferArea = new byte[1024 * 10];
+        BufferedInputStream bufferStream = new BufferedInputStream(fileInput, 1024 * 10);
+        // 将当前文件作为一个zip实体写入压缩流,fileName代表压缩文件中的文件名称
+        zipOut.putNextEntry(new ZipEntry(fileName));
+        int length = 0;
+        // 最常规IO操作,不必紧张
+        while ((length = bufferStream.read(bufferArea, 0, 1024 * 10)) != -1) {
+            zipOut.write(bufferArea, 0, length);
+        }
+        //关闭流
+        fileInput.close();
+        // 需要注意的是缓冲流必须要关闭流,否则输出无效
+        bufferStream.close();
+        // 压缩流不必关闭,使用完后再关
+    }
+
+
 
     @RequestMapping(value = "modifyInf",produces = { "application/json;charset=UTF-8" })
     @ResponseBody
@@ -463,6 +516,19 @@ public class UserController {
         }
     }
 
+    @RequestMapping(value = "pressLike",produces = { "application/json;charset=UTF-8" })
+    public String pressLike (LikeComic likeComic){
+        if (likeComicService.hasLike(likeComic)!=null)
+        {
+           return deleteComicLike(likeComic);
+        }
+        else
+        {
+            return addComicLike(likeComic);
+        }
+
+    }
+
     @RequestMapping(value = "addComicLike",produces = { "application/json;charset=UTF-8" })
     public String addComicLike (LikeComic likeComic) {
         JSONObject returnValue = new JSONObject();
@@ -488,11 +554,15 @@ public class UserController {
         if (likeComicService.hasLike(likeComic) != null) {
             returnValue.put("status", FAIL);
             returnValue.put("msg", "已经为该漫画点过赞");
+            returnValue.put("hasALike",true);
+            returnValue.put("comicLike",likeComicService.queryComicLike(likeComic.getComicName()));
             return returnValue.toString();
         }
         likeComicService.addComicLike(likeComic);
         returnValue.put("status", SUCCESS);
         returnValue.put("msg", "点赞成功！");
+        returnValue.put("hasALike",true);
+        returnValue.put("comicLike",likeComicService.queryComicLike(likeComic.getComicName()));
         return returnValue.toString();
     }
 
@@ -504,11 +574,15 @@ public class UserController {
         {
             returnValue.put("status",FAIL);
             returnValue.put("msg","无点赞无需撤销点赞！");
+            returnValue.put("hasALike",false);
+            returnValue.put("comicLike",likeComicService.queryComicLike(likeComic.getComicName()));
             return returnValue.toString();
         }
         likeComicService.deleteComicLike(likeComic);
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","取消点赞成功！");
+        returnValue.put("hasALike",false);
+        returnValue.put("comicLike",likeComicService.queryComicLike(likeComic.getComicName()));
         return returnValue.toString();
     }
 
@@ -553,18 +627,21 @@ public class UserController {
         List <String> imgPaths = new ArrayList<>();
         List <String> usernames = new ArrayList<>();
         List <String> comicNames = new ArrayList<>();
+        List <String> tags = new ArrayList<>();
         for (Comic comic: comics)
         {
             imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
+            tags.add(comic.getTag());
         }
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","返回所有漫画！");
         returnValue.put("imgPaths",imgPaths);
         returnValue.put("username",usernames);
         returnValue.put("comicNames",comicNames);
+        returnValue.put("tags",tags);
         return returnValue.toString();
     }
 
@@ -589,18 +666,21 @@ public class UserController {
         List <String> imgPaths = new ArrayList<>();
         List <String> usernames = new ArrayList<>();
         List <String> comicNames = new ArrayList<>();
+        List <String> tags = new ArrayList<>();
         for (Comic comic: comics)
         {
             imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
+            tags.add(comic.getTag());
         }
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","返回该用户所有漫画！");
         returnValue.put("imgPaths",imgPaths);
         returnValue.put("username",usernames);
         returnValue.put("comicNames",comicNames);
+        returnValue.put("tags",tags);
         return returnValue.toString();
     }
 
@@ -616,12 +696,14 @@ public class UserController {
         List <String> imgPaths = new ArrayList<>();
         List <String> usernames = new ArrayList<>();
         List <String> comicNames = new ArrayList<>();
+        List <String> tags = new ArrayList<>();
         for (Comic comic: comics)
         {
             imgPaths.add("/upload/"+comic.getUsername()+"/"+comic.getComicName()+".jpg");
             //将图片文件返回前端
             usernames.add(comic.getUsername());
             comicNames.add(comic.getComicName());
+            tags.add(comic.getTag());
         }
         returnValue.put("status",SUCCESS);
         returnValue.put("msg","返回根据标签查询的漫画！");
@@ -629,6 +711,7 @@ public class UserController {
         returnValue.put("imgPaths",imgPaths);
         returnValue.put("username",usernames);
         returnValue.put("comicNames",comicNames);
+        returnValue.put("tags",tags);
         return returnValue.toString();
     }
 
